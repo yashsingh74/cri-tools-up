@@ -79,10 +79,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: src/github.com/kubernetes-sigs/cri-tools
+          path: src/github.com/yashsingh74/cri-tools
           fetch-depth: 0
 
       - name: Make release
         shell: bash
         run: make release
-        working-directory: src/github.com/kubernetes-sigs/cri-tools
+        working-directory: src/github.com/yashsingh74/cri-tools
