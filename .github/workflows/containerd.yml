@@ -18,9 +18,9 @@ jobs:
         # ║ hcshim           │           │ runhcs  ║
         # ╚══════════════════╧═══════════╧═════════╝
         os: [ubuntu-18.04, windows-2019]
-        version: [master, v1.4.3]
+        version: [v1.4.3]
         runtime: [io.containerd.runtime.v1.linux, io.containerd.runc.v1, io.containerd.runc.v2, containerd-shim-runhcs-v1]
-        runc: [runc, crun]
+        runc: [runc]
         exclude:
           - runtime: io.containerd.runc.v1
             os: windows-2019
@@ -30,19 +30,13 @@ jobs:
             os: windows-2019
           - runtime: containerd-shim-runhcs-v1
             os: ubuntu-18.04
-          - runtime: io.containerd.runc.v1
-            runc: crun
-          - runtime: io.containerd.runtime.v1.linux
-            runc: crun
-          - runc: crun
-            os: windows-2019
     name: ${{matrix.version}} / ${{ matrix.os }} / ${{matrix.runtime}} / ${{matrix.runc}}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.15'
+          go-version: '1.13'
 
       - name: Set env
         shell: bash
