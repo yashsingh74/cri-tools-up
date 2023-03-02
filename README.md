@@ -7,7 +7,7 @@ CLI and validation tools for Kubelet Container Runtime Interface (CRI) .
 
 ## What is the scope of this project?
 
-cri-tools aims to provide a series of debugging and validation tools for Kubelet CRI, which includes:
+cri-tools aims to provide a series of debugging and validation tools for Kubelet CRI, which includes :
 
 - crictl: CLI for kubelet CRI.
 - critest: validation test suites for kubelet CRI.
