@@ -52,9 +52,13 @@ CRICTL OPTIONS:
 			Name:  "set",
 			Usage: "set option (can specify multiple or separate values with commas: opt1=val1,opt2=val2)",
 		},
+		&cli.BoolFlag{
+			Name:  "list",
+			Usage: "show all option value",
+		},
 	},
-	Action: func(context *cli.Context) error {
-		configFile := context.String("config")
+	Action: func(c *cli.Context) error {
+		configFile := c.String("config")
 		if _, err := os.Stat(configFile); err != nil {
 			if err := common.WriteConfig(nil, configFile); err != nil {
 				return err
@@ -65,8 +69,8 @@ CRICTL OPTIONS:
 		if err != nil {
 			return fmt.Errorf("load config file: %w", err)
 		}
-		if context.IsSet("get") {
-			get := context.String("get")
+		if c.IsSet("get") {
+			get := c.String("get")
 			switch get {
 			case "runtime-endpoint":
 				fmt.Println(config.RuntimeEndpoint)
@@ -84,8 +88,8 @@ CRICTL OPTIONS:
 				return fmt.Errorf("no configuration option named %s", get)
 			}
 			return nil
-		} else if context.IsSet("set") {
-			settings := context.StringSlice("set")
+		} else if c.IsSet("set") {
+			settings := c.StringSlice("set")
 			for _, setting := range settings {
 				options := strings.Split(setting, ",")
 				for _, option := range options {
@@ -101,12 +105,25 @@ CRICTL OPTIONS:
 				}
 			}
 			return common.WriteConfig(config, configFile)
+		} else if c.Bool("list") {
+			display := newTableDisplay(20, 1, 3, ' ', 0)
+			display.AddRow([]string{columnKey, columnValue})
+			display.AddRow([]string{"runtime-endpoint", config.RuntimeEndpoint})
+			display.AddRow([]string{"image-endpoint", config.ImageEndpoint})
+			display.AddRow([]string{"timeout", strconv.Itoa(config.Timeout)})
+			display.AddRow([]string{"debug", strconv.FormatBool(config.Debug)})
+			display.AddRow([]string{"pull-image-on-create", strconv.FormatBool(config.PullImageOnCreate)})
+			display.AddRow([]string{"disable-pull-on-run", strconv.FormatBool(config.DisablePullOnRun)})
+			display.ClearScreen()
+			display.Flush()
+
+			return nil
 		} else { // default for backwards compatibility
-			key := context.Args().First()
+			key := c.Args().First()
 			if key == "" {
-				return cli.ShowSubcommandHelp(context)
+				return cli.ShowSubcommandHelp(c)
 			}
-			value := context.Args().Get(1)
+			value := c.Args().Get(1)
 			if err := setValue(key, value, config); err != nil {
 				return err
 			}
